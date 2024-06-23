@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="/style.css">
     <style>
         #map {
             height: 500px;
@@ -23,7 +24,71 @@
         <textarea id="message" name="message" required></textarea><br>
         <input type="submit" value="Submit">
     </form>
-    
-    
+   
+
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+    <script>
+        function initialize() {
+            const submitButton = document.getElementById("submit");
+            submitButton.addEventListener("click", () => {
+                const url = document.getElementById("url").value;
+                findNearbyHospitals(url);
+            });
+        }
+
+        function findNearbyHospitals(location) {
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address: location }, (results, status) => {
+                if (status === google.maps.GeocoderStatus.OK) {
+                    const map = new google.maps.Map(document.createElement('div'));
+                    const service = new google.maps.places.PlacesService(map);
+                    const request = {
+                        location: results[0].geometry.location,
+                        radius: '5000',
+                        type: ['hospital']
+                    };
+
+                    service.nearbySearch(request, (results, status) => {
+                        if (status === google.maps.places.PlacesServiceStatus.OK) {
+                            results.forEach(place => {
+                                const detailsRequest = {
+                                    placeId: place.place_id,
+                                    fields: ['name', 'formatted_address', 'formatted_phone_number']
+                                };
+                                
+                                service.getDetails(detailsRequest, (placeDetails, status) => {
+                                    if (status === google.maps.places.PlacesServiceStatus.OK) {
+                                        console.log('Hospital Name:', placeDetails.name);
+                                        console.log('Address:', placeDetails.formatted_address);
+                                        console.log('Phone Number:', placeDetails.formatted_phone_number);
+                                    }
+                                });
+                            });
+                        }
+                    });
+                } else {
+                    console.error('Geocode was not successful for the following reason: ' + status);
+                }
+            });
+        }
+
+        window.onload = initialize;
+    </script>
+
+<input type="text" id="url">
+<button type="submit" id="submit">Submit</button>
+
+<!-- <script>
+    document.getElementById("submit").addEventListener("click",()=>{
+       var url=document.getElementById("url").value
+       const open=`https://www.google.com/search?q=hospitals near by ${url}`
+       window.open(open);
+    })
+  
+</script> -->
+
+<!-- <div id="red"></div> -->
+    <script type="text/javascript" src="/script.js"></script>
 </body>
 </html>
