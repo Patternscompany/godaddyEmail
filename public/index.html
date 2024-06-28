@@ -14,70 +14,19 @@
     </style>
 </head>
 <body>
-    <form  action="/send-email" method="POST">
+    <form  action="/send-email" method="POST" enctype="multipart/form-data">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br>
         <label for="email">Email:</label>
         <input type="email"
         id="email" name="email" required><br>
+        <input type="file" id="resume" name="resume">
         <label for="message">Message:</label>
         <textarea id="message" name="message" required></textarea><br>
         <input type="submit" value="Submit">
     </form>
    
 
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
-    <script>
-        function initialize() {
-            const submitButton = document.getElementById("submit");
-            submitButton.addEventListener("click", () => {
-                const url = document.getElementById("url").value;
-                findNearbyHospitals(url);
-            });
-        }
-
-        function findNearbyHospitals(location) {
-            const geocoder = new google.maps.Geocoder();
-            geocoder.geocode({ address: location }, (results, status) => {
-                if (status === google.maps.GeocoderStatus.OK) {
-                    const map = new google.maps.Map(document.createElement('div'));
-                    const service = new google.maps.places.PlacesService(map);
-                    const request = {
-                        location: results[0].geometry.location,
-                        radius: '5000',
-                        type: ['hospital']
-                    };
-
-                    service.nearbySearch(request, (results, status) => {
-                        if (status === google.maps.places.PlacesServiceStatus.OK) {
-                            results.forEach(place => {
-                                const detailsRequest = {
-                                    placeId: place.place_id,
-                                    fields: ['name', 'formatted_address', 'formatted_phone_number']
-                                };
-                                
-                                service.getDetails(detailsRequest, (placeDetails, status) => {
-                                    if (status === google.maps.places.PlacesServiceStatus.OK) {
-                                        console.log('Hospital Name:', placeDetails.name);
-                                        console.log('Address:', placeDetails.formatted_address);
-                                        console.log('Phone Number:', placeDetails.formatted_phone_number);
-                                    }
-                                });
-                            });
-                        }
-                    });
-                } else {
-                    console.error('Geocode was not successful for the following reason: ' + status);
-                }
-            });
-        }
-
-        window.onload = initialize;
-    </script>
-
-<input type="text" id="url">
-<button type="submit" id="submit">Submit</button>
 
 <!-- <script>
     document.getElementById("submit").addEventListener("click",()=>{
